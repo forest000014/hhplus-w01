@@ -22,6 +22,7 @@ public class PointController {
     @GetMapping("{id}")
     public UserPoint point(@PathVariable Long id) {
         try {
+            // TODO - PointHistoryTable 로직도 추가할 것 !
             return userPointTable.selectById(id);
         } catch (InterruptedException e) {
             throw new RuntimeException("UserPointTable selectById() interrupted.");
@@ -41,6 +42,13 @@ public class PointController {
      */
     @PatchMapping("{id}/charge")
     public UserPoint charge(@PathVariable Long id, @RequestBody Long amount) {
+        try {
+            UserPoint userPoint = userPointTable.selectById(id);
+            // TODO - amount 음수, 0 검증 필요
+            userPointTable.insertOrUpdate(id, userPoint.point() + amount);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("UserPointTable insertOrUpdate() interrupted.");
+        }
         return new UserPoint(0L, 0L, 0L);
     }
 
