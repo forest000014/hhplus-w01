@@ -12,15 +12,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * 컨트롤러만을 테스트하기 위해, @SpringBootTest보다 가벼운 @WebMvcTest를 사용했습니다.
+ */
 @WebMvcTest(PointController.class)
 public class PointControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * 컨트롤러 테스트이기 때문에, (DB의 기능은 정상적으로 작동한다고 가정하고) @MockBean을 사용했습니다.
+     */
     @MockBean
     private UserPointTable userPointTable;
 
+    /**
+     * 정상적으로 조회 성공하는 케이스
+     */
     @Test
     void getPoint_ValidId_Success() throws Exception {
         // given
@@ -38,6 +47,9 @@ public class PointControllerTest {
                 .andExpect(jsonPath("$.point").value(point));
     }
 
+    /**
+     * path에서 /{id}를 누락한 케이스
+     */
     @Test
     void getPoint_MissingIdPathVariable_Status404() throws Exception {
         // given
@@ -49,6 +61,9 @@ public class PointControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    /**
+     * 존재하지 않는 id를 조회하는 케이스
+     */
     @Test
     void getPoint_NotExistingId_Point0() throws Exception {
         // given
@@ -66,6 +81,10 @@ public class PointControllerTest {
                 .andExpect(jsonPath("$.point").value(point));
     }
 
+    /**
+     * 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
+     * @throws Exception
+     */
     @Test
     void getPoint_InvalidId_Status400() throws Exception {
         // given
@@ -78,6 +97,9 @@ public class PointControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * DB 조회 중 인터럽트가 발생한 케이스
+     */
     @Test
     void getPoint_DbInterrupted_Status500() throws Exception {
         // given
