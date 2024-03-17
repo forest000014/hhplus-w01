@@ -28,7 +28,7 @@ public class PointControllerTest {
     private UserPointTable userPointTable;
 
     /**
-     * 정상적으로 조회 성공하는 케이스
+     * 1-1. GET /point/{id} - 정상적으로 조회 성공하는 케이스
      */
     @Test
     void getPoint_ValidId_Success() throws Exception {
@@ -48,7 +48,7 @@ public class PointControllerTest {
     }
 
     /**
-     * path에서 /{id}를 누락한 케이스
+     * 1-2. GET /point/{id} - path에서 /{id}를 누락한 케이스
      */
     @Test
     void getPoint_MissingIdPathVariable_Status404() throws Exception {
@@ -62,7 +62,7 @@ public class PointControllerTest {
     }
 
     /**
-     * 존재하지 않는 id를 조회하는 케이스
+     * 1-3. GET /point/{id} - 존재하지 않는 id를 조회하는 케이스
      */
     @Test
     void getPoint_NotExistingId_Point0() throws Exception {
@@ -82,8 +82,7 @@ public class PointControllerTest {
     }
 
     /**
-     * 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
-     * @throws Exception
+     * 1-4. GET /point/{id} - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
      */
     @Test
     void getPoint_InvalidId_Status400() throws Exception {
@@ -98,7 +97,7 @@ public class PointControllerTest {
     }
 
     /**
-     * DB 조회 중 인터럽트가 발생한 케이스
+     * 1-5. GET /point/{id} - DB 조회 중 인터럽트가 발생한 케이스
      */
     @Test
     void getPoint_DbInterrupted_Status500() throws Exception {
