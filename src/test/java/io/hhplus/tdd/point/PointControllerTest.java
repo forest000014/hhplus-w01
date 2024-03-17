@@ -125,6 +125,31 @@ public class PointControllerTest {
     }
 
     /**
+     * PATCH /point/{id}/charge - 정상적으로 업데이트 성공하는 케이스
+     */
+    @Test
+    void patchPointCharge_ValidParams_Success() throws Exception {
+        // given
+        Long id = 1L;
+        Long amount = 1000L;
+        Long originalAmount = 500L;
+        given(userPointTable.selectById(id))
+                .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
+        given(userPointTable.insertOrUpdate(id, originalAmount + amount))
+                .willReturn(new UserPoint(id, originalAmount + amount, System.currentTimeMillis()));
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/{id}/charge", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(amount.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.point").value(originalAmount + amount));
+    }
+
+    /**
      * PATCH /point/{id}/charge - path에서 /{id}를 누락한 케이스
      */
     @Test
@@ -139,7 +164,7 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id} - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
+     * PATCH /point/{id}/charge - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
      */
     @Test
     void patchPointCharge_InvalidId_Status400() throws Exception {
@@ -158,7 +183,7 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id} - 유효하지 않은 amount(e.g., 문자열)를 사용한 케이스
+     * PATCH /point/{id}/charge - 유효하지 않은 amount(e.g., 문자열)를 사용한 케이스
      */
     @Test
     void patchPointCharge_InvalidAmount_Status400() throws Exception {
@@ -177,7 +202,7 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id} - DB 업데이트 중 인터럽트가 발생한 케이스
+     * PATCH /point/{id}/charge - DB 업데이트 중 인터럽트가 발생한 케이스
      */
     @Test
     void patchPointCharge_DbInterrupted_Status500() throws Exception {

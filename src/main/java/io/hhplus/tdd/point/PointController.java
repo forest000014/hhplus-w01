@@ -45,11 +45,10 @@ public class PointController {
         try {
             UserPoint userPoint = userPointTable.selectById(id);
             // TODO - amount 음수, 0 검증 필요
-            userPointTable.insertOrUpdate(id, userPoint.point() + amount);
+            return userPointTable.insertOrUpdate(id, userPoint.point() + amount);
         } catch (InterruptedException e) {
             throw new RuntimeException("UserPointTable insertOrUpdate() interrupted.");
         }
-        return new UserPoint(0L, 0L, 0L);
     }
 
     /**
