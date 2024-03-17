@@ -38,7 +38,18 @@ public class PointControllerTest {
     }
 
     @Test
-    void getPoint_InvalidId_Point0() throws Exception {
+    void getPoint_MissingIdPathVariable_Status404() throws Exception {
+        // given
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPoint_NotExistingId_Point0() throws Exception {
         // given
         Long id = 999_999L;
         Long point = 0L;
