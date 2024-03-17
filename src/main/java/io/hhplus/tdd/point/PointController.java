@@ -15,7 +15,7 @@ public class PointController {
      */
     @GetMapping("{id}")
     public UserPoint point(@PathVariable Long id) {
-        return new UserPoint(0L, 0L, 0L);
+        return new UserPoint(id, 0L, 0L);
     }
 
     /**

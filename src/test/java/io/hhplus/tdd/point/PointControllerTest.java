@@ -14,14 +14,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PointControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @Test
     void get_point_by_id() throws Exception {
         // given
-        Long id = 0L;
+        Long id = 1L;
         Gson gson = new Gson();
-        String responseJson = gson.toJson(new UserPoint(0L, 0L, 0L));
+        String responseJson = gson.toJson(new UserPoint(id, 0L, 0L));
 
         // when
 
