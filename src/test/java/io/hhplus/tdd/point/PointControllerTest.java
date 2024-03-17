@@ -3,22 +3,22 @@ package io.hhplus.tdd.point;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@WebMvcTest(PointController.class)
 public class PointControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private UserPointTable userPointTable;
 
     @Test
@@ -26,9 +26,10 @@ public class PointControllerTest {
         // given
         Long id = 1L;
         Long point = 1000L;
+        given(userPointTable.selectById(id))
+                .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // when
-        userPointTable.insertOrUpdate(id, point);
 
         // then
         mockMvc.perform(get("/point/{id}", id))
@@ -53,6 +54,8 @@ public class PointControllerTest {
         // given
         Long id = 999_999L;
         Long point = 0L;
+        given(userPointTable.selectById(id))
+                .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // when
 
@@ -73,5 +76,19 @@ public class PointControllerTest {
         // then
         mockMvc.perform(get("/point/{id}", id))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getPoint_DbInterrupted_Status500() throws Exception {
+        // given
+        Long id = 1L;
+        given(userPointTable.selectById(id))
+                .willThrow(new InterruptedException());
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point/{id}", id))
+                .andExpect(status().isInternalServerError());
     }
 }

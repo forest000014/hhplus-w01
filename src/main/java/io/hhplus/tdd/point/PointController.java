@@ -24,7 +24,7 @@ public class PointController {
         try {
             return userPointTable.selectById(id);
         } catch (InterruptedException e) {
-            throw new RuntimeException("UserPointTable selectById interrupted.");
+            throw new RuntimeException("UserPointTable selectById() interrupted.");
         }
     }
 
