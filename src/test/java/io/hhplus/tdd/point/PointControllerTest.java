@@ -52,7 +52,7 @@ public class PointControllerTest {
      * 1-2. GET /point/{id} - path에서 /{id}를 누락한 케이스
      */
     @Test
-    void getPoint_MissingIdPathVariable_Status404() throws Exception {
+    void getPoint_MissingId_Status404() throws Exception {
         // given
 
         // when
