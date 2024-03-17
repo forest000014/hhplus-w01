@@ -14,7 +14,7 @@ public class UserPointTable {
     private Map<Long, UserPoint> table = new HashMap<>();
 
     public UserPoint selectById(Long id) throws InterruptedException {
-        Thread.sleep(Long.parseLong(String.valueOf(Math.random())) * 200L);
+        Thread.sleep((long)(Math.random() * 200.0));
 
         UserPoint userPoint = table.get(id);
 
@@ -25,7 +25,7 @@ public class UserPointTable {
     }
 
     public UserPoint insertOrUpdate(Long id, Long amount) throws InterruptedException {
-        Thread.sleep(Long.parseLong(String.valueOf(Math.random())) * 300L);
+        Thread.sleep((long)(Math.random() * 300.0));
 
         UserPoint userPoint = new UserPoint(id, amount, System.currentTimeMillis());
         table.put(id, userPoint);
