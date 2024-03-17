@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,5 +114,19 @@ public class PointControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
+    }
+
+    /**
+     * PATCH /point/{id}/charge - path에서 /{id}를 누락한 케이스
+     */
+    @Test
+    void patchPointCharge_MissingIdPathVariable_Status405() throws Exception {
+        // given
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/charge"))
+                .andExpect(status().isMethodNotAllowed()); // TODO - 컨트롤러 예외 처리 통일 필요
     }
 }
