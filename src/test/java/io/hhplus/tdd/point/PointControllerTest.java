@@ -89,6 +89,8 @@ public class PointControllerTest {
 
         // then
         mockMvc.perform(get("/point/{id}", id))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
     }
 }
