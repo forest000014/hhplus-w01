@@ -22,13 +22,29 @@ public class PointControllerTest {
     private UserPointTable userPointTable;
 
     @Test
-    void get_point_by_id() throws Exception {
+    void getPoint_ValidId_Success() throws Exception {
         // given
         Long id = 1L;
         Long point = 1000L;
 
         // when
         userPointTable.insertOrUpdate(id, point);
+
+        // then
+        mockMvc.perform(get("/point/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.point").value(point));
+    }
+
+    @Test
+    void getPoint_InvalidId_Point0() throws Exception {
+        // given
+        Long id = 999_999L;
+        Long point = 0L;
+
+        // when
+        userPointTable.insertOrUpdate(1L, 1000L);
 
         // then
         mockMvc.perform(get("/point/{id}", id))
