@@ -55,12 +55,23 @@ public class PointControllerTest {
         Long point = 0L;
 
         // when
-        userPointTable.insertOrUpdate(1L, 1000L);
 
         // then
         mockMvc.perform(get("/point/{id}", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.point").value(point));
+    }
+
+    @Test
+    void getPoint_InvalidId_Status400() throws Exception {
+        // given
+        String id = "abc";
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point/{id}", id))
+                .andExpect(status().isBadRequest());
     }
 }
