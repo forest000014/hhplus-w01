@@ -46,6 +46,7 @@ mysql_connector = { module = "com.mysql:mysql-connector-j" }
 h2 = { module = "com.h2database:h2" }
 
 #jackson_kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
+gson = { module = "com.google.code.gson:gson" }
 
 micrometer_tracing_bridge_brave = { module = "io.micrometer:micrometer-tracing-bridge-brave" }
 micrometer_registry_prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
