@@ -1,6 +1,8 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.UserPointTable;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -10,12 +12,20 @@ import java.util.List;
 @RequestMapping("/point")
 @RestController
 public class PointController {
+
+    @Autowired
+    private UserPointTable userPointTable; // TODO : service / repository 계층 분리
+
     /**
      * TODO - 특정 유저의 포인트를 조회하는 기능을 작성해주세요.
      */
     @GetMapping("{id}")
     public UserPoint point(@PathVariable Long id) {
-        return new UserPoint(id, 0L, 0L);
+        try {
+            return userPointTable.selectById(id);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("UserPointTable selectById interrupted.");
+        }
     }
 
     /**

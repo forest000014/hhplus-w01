@@ -37,8 +37,6 @@ dependencies {
 	annotationProcessor(libs.spring.boot.configuration.processor)
 	testImplementation(libs.spring.boot.starter.test)
 
-	implementation(libs.gson)
-
 	compileOnly(libs.lombok)
 	annotationProcessor(libs.lombok)
 }
