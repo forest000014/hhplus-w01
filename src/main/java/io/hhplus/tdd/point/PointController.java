@@ -42,9 +42,12 @@ public class PointController {
      */
     @PatchMapping("{id}/charge")
     public UserPoint charge(@PathVariable Long id, @RequestBody Long amount) {
+        if (amount <= 0L) {
+            throw new RuntimeException("'amount'는 자연수이어야 합니다.");
+        }
+
         try {
             UserPoint userPoint = userPointTable.selectById(id);
-            // TODO - amount 음수, 0 검증 필요
             return userPointTable.insertOrUpdate(id, userPoint.point() + amount);
         } catch (InterruptedException e) {
             throw new RuntimeException("UserPointTable insertOrUpdate() interrupted.");

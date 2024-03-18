@@ -183,22 +183,44 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id}/charge - 유효하지 않은 amount(e.g., 문자열)를 사용한 케이스
+     * PATCH /point/{id}/charge - 유효하지 않은 amount(문자열)를 사용한 케이스
      */
     @Test
-    void patchPointCharge_InvalidAmount_Status400() throws Exception {
+    void patchPointCharge_AmountIsString_Status400() throws Exception {
         // given
-        String id = "1";
-        Map<String, String> body = new HashMap<>();
-        body.put("amount", "abc");
+        Long id = 1L;
+        Long originalAmount = 1000L;
+        String amountString = "abc";
+
+        // when
+        given(userPointTable.selectById(id))
+                .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
+
+        // then
+        mockMvc.perform(patch("/point/{id}/charge", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(amountString))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * PATCH /point/{id}/charge - 유효하지 않은 amount(음수)를 사용한 케이스
+     */
+    @Test
+    void patchPointCharge_AmountIsNegative_Status400() throws Exception {
+        // given
+        Long id = 1L;
+        Long amountLong = -999L;
 
         // when
 
         // then
         mockMvc.perform(patch("/point/{id}/charge", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(body)))
-                .andExpect(status().isBadRequest());
+                        .content(amountLong.toString()))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
     }
 
     /**
