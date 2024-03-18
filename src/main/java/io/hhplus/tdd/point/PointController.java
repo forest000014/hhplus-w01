@@ -25,7 +25,7 @@ public class PointController {
             // TODO - PointHistoryTable 로직도 추가할 것 !
             return userPointTable.selectById(id);
         } catch (InterruptedException e) {
-            throw new RuntimeException("UserPointTable selectById() interrupted.");
+            throw new RuntimeException("UserPointTable selectById() 실행 도중 인터럽트가 발생했습니다.");
         }
     }
 
@@ -50,7 +50,7 @@ public class PointController {
             UserPoint userPoint = userPointTable.selectById(id);
             return userPointTable.insertOrUpdate(id, userPoint.point() + amount);
         } catch (InterruptedException e) {
-            throw new RuntimeException("UserPointTable insertOrUpdate() interrupted.");
+            throw new RuntimeException("UserPointTable insertOrUpdate() 실행 도중 인터럽트가 발생했습니다.");
         }
     }
 
