@@ -5,6 +5,12 @@ plugins {
 	id("jacoco")
 }
 
+configurations {
+	compileOnly {
+		extendsFrom(configurations.annotationProcessor.get())
+	}
+}
+
 allprojects {
 	group = property("app.group").toString()
 }
@@ -15,30 +21,21 @@ dependencyManagement {
 	}
 }
 
-group = "io.hhplus"
-version = "0.0.1-SNAPSHOT"
+dependencies {
+	implementation(libs.spring.boot.starter.web)
+	compileOnly(libs.lombok)
+	annotationProcessor(libs.lombok)
+	annotationProcessor(libs.spring.boot.configuration.processor)
+	testImplementation(libs.spring.boot.starter.test)
+}
 
+// about source and compilation
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 }
 
 with(extensions.getByType(JacocoPluginExtension::class.java)) {
 	toolVersion = "0.8.7"
-}
-
-configurations {
-	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
-	}
-}
-
-dependencies {
-	implementation(libs.spring.boot.starter.web)
-	annotationProcessor(libs.spring.boot.configuration.processor)
-	testImplementation(libs.spring.boot.starter.test)
-
-	compileOnly(libs.lombok)
-	annotationProcessor(libs.lombok)
 }
 
 // bundling tasks
