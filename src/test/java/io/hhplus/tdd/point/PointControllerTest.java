@@ -118,7 +118,7 @@ public class PointControllerTest {
         long originalAmount = 500L;
         given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
-        given(pointService.addPoint(id, amount))
+        given(pointService.chargePoint(id, amount))
                 .willReturn(new UserPoint(id, originalAmount + amount, System.currentTimeMillis()));
 
         // when
@@ -217,7 +217,7 @@ public class PointControllerTest {
         long originalAmount = 1000L;
         given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
-        given(pointService.addPoint(id, -amount))
+        given(pointService.usePoint(id, amount))
                 .willReturn(new UserPoint(id, originalAmount - amount, System.currentTimeMillis()));
 
         // when
@@ -300,6 +300,31 @@ public class PointControllerTest {
         mockMvc.perform(patch("/point/{id}/use", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(String.valueOf(amountLong)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
+    }
+
+    /**
+     * PATCH /point/{id}/use - 보유 중인 포인트보다 많은 포인트를 사용하려는 케이스
+     */
+    @Test
+    void patchPointUse_AmountIsLargerThanCurrentPoint_Status400() throws Exception {
+        // given
+        long id = 1L;
+        long amount = 1000L;
+        long currentPoint = 500L;
+        given(pointService.getPoint(id))
+                .willReturn(new UserPoint(id, currentPoint, System.currentTimeMillis()));
+        given(pointService.usePoint(id, amount))
+                .willThrow(new RuntimeException("보유 중인 포인트가 사용하고자 하는 포인트보다 적습니다."));
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/{id}/use", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(amount)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
