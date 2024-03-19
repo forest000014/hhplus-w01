@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,7 +136,7 @@ public class PointControllerTest {
      * PATCH /point/{id}/charge - id를 누락한 케이스
      */
     @Test
-    void patchPointCharge_MissingIdPathVariable_Status405() throws Exception {
+    void patchPointCharge_MissingId_Status405() throws Exception {
         // given
 
         // when
@@ -234,7 +235,7 @@ public class PointControllerTest {
      * PATCH /point/{id}/use - id를 누락한 케이스
      */
     @Test
-    void patchPointUse_MissingIdPathVariable_Status405() throws Exception {
+    void patchPointUse_MissingId_Status405() throws Exception {
         // given
 
         // when
@@ -302,5 +303,47 @@ public class PointControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
+    }
+
+    /**
+     * GET /point/{id}/histories - 정상적으로 조회 성공하는 케이스
+     */
+    @Test
+    void getPointHistories_ValidId_Success() throws Exception {
+        // given
+        long userId = 9;
+        ArrayList<PointHistory> pointHistories = new ArrayList<>();
+        pointHistories.add(new PointHistory(1, userId, 1000, TransactionType.CHARGE, System.currentTimeMillis()));
+        pointHistories.add(new PointHistory(2, userId, 500, TransactionType.USE, System.currentTimeMillis() + 1000));
+        given(pointService.getPointHistories(userId))
+                .willReturn(pointHistories);
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point/{id}/histories", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].id").value(1))
+                .andExpect(jsonPath("$.[0].userId").value(userId))
+                .andExpect(jsonPath("$.[0].amount").value(1000))
+                .andExpect(jsonPath("$.[0].type").value(TransactionType.CHARGE.name()))
+                .andExpect(jsonPath("$.[1].id").value(2))
+                .andExpect(jsonPath("$.[1].userId").value(userId))
+                .andExpect(jsonPath("$.[1].amount").value(500))
+                .andExpect(jsonPath("$.[1].type").value(TransactionType.USE.name()));
+    }
+
+    /**
+     * GET /point/{id}/histories - id를 누락한 케이스
+     */
+    @Test
+    void getPointHistories_MissingId_Success() throws Exception {
+        // given
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point/histories"))
+                .andExpect(status().isBadRequest());
     }
 }

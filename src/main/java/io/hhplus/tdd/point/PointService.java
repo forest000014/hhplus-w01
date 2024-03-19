@@ -5,6 +5,7 @@ import io.hhplus.tdd.database.UserPointTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,7 +30,9 @@ public class PointService {
         return newUserPoint ;
     }
 
-    public List<PointHistory> getPointHistoryList(long id) {
-        return pointHistoryTable.selectAllByUserId(id);
+    public List<PointHistory> getPointHistories(long id) {
+        List<PointHistory> pointHistories = pointHistoryTable.selectAllByUserId(id);
+        pointHistories.sort(Comparator.comparingLong(PointHistory::updateMillis));
+        return pointHistories;
     }
 }
