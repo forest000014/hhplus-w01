@@ -5,6 +5,8 @@ import io.hhplus.tdd.database.UserPointTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PointService {
 
@@ -25,5 +27,9 @@ public class PointService {
         // TODO - 트랜잭션 구현 필요
 
         return newUserPoint ;
+    }
+
+    public List<PointHistory> getPointHistoryList(long id) {
+        return pointHistoryTable.selectAllByUserId(id);
     }
 }
