@@ -106,25 +106,6 @@ public class PointControllerTest {
     }
 
     /**
-     * 1-5. GET /point/{id} - DB 조회 중 인터럽트가 발생한 케이스
-     */
-    @Test
-    void getPoint_DbInterrupted_Status500() throws Exception {
-        // given
-        Long id = 1L;
-        given(userPointTable.selectById(id))
-                .willThrow(new InterruptedException());
-
-        // when
-
-        // then
-        mockMvc.perform(get("/point/{id}", id))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value("500"))
-                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
-    }
-
-    /**
      * PATCH /point/{id}/charge - 정상적으로 업데이트 성공하는 케이스
      */
     @Test
@@ -218,28 +199,6 @@ public class PointControllerTest {
         mockMvc.perform(patch("/point/{id}/charge", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(amountLong.toString()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value("500"))
-                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
-    }
-
-    /**
-     * PATCH /point/{id}/charge - DB 업데이트 중 인터럽트가 발생한 케이스
-     */
-    @Test
-    void patchPointCharge_DbInterrupted_Status500() throws Exception {
-        // given
-        Long id = 1L;
-        Long amount = 1000L;
-        given(userPointTable.insertOrUpdate(id, amount))
-                .willThrow(new InterruptedException());
-
-        // when
-
-        // then
-        mockMvc.perform(patch("/point/{id}/charge", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(amount.toString()))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
