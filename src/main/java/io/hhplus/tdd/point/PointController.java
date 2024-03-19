@@ -18,10 +18,7 @@ public class PointController {
     private static final Logger log = LoggerFactory.getLogger(PointController.class);
 
     @Autowired
-    private UserPointTable userPointTable; // TODO - service / repository 계층 분리
-
-    @Autowired
-    private PointHistoryTable pointHistoryTable;  // TODO - service / repository 계층 분리
+    private PointService pointService;
 
     /**
      * TODO - 특정 유저의 포인트를 조회하는 기능을 작성해주세요.
@@ -30,7 +27,7 @@ public class PointController {
     public UserPoint point(
             @PathVariable long id
     ) {
-        return userPointTable.selectById(id);
+        return pointService.getPoint(id);
     }
 
     /**
@@ -55,11 +52,7 @@ public class PointController {
             throw new RuntimeException("'amount'는 자연수이어야 합니다.");
         }
 
-        UserPoint userPoint = userPointTable.selectById(id);
-        // TODO - 트랜잭션 구현 필요
-        UserPoint newUserPoint = userPointTable.insertOrUpdate(id, userPoint.point() + amount);
-        pointHistoryTable.insert(id, newUserPoint.point(), TransactionType.CHARGE, System.currentTimeMillis());
-        return newUserPoint;
+        return pointService.getPoint(id);
     }
 
     /**
