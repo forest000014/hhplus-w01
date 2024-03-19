@@ -52,7 +52,7 @@ public class PointController {
             throw new RuntimeException("'amount'는 자연수이어야 합니다.");
         }
 
-        return pointService.getPoint(id);
+        return pointService.updatePoint(id, amount);
     }
 
     /**
