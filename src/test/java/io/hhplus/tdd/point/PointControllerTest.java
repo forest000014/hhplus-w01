@@ -72,7 +72,22 @@ public class PointControllerTest {
     }
 
     /**
-     * 1-3. GET /point/{id} - 존재하지 않는 id를 조회하는 케이스
+     * 1-3. GET /point/{id} - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
+     */
+    @Test
+    void getPoint_InvalidId_Status400() throws Exception {
+        // given
+        String id = "abc";
+
+        // when
+
+        // then
+        mockMvc.perform(get("/point/{id}", id))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * 1-4. GET /point/{id} - 존재하지 않는 id를 조회하는 케이스
      */
     @Test
     void getPoint_NotExistingId_Point0() throws Exception {
@@ -89,21 +104,6 @@ public class PointControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.point").value(point));
-    }
-
-    /**
-     * 1-4. GET /point/{id} - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
-     */
-    @Test
-    void getPoint_InvalidId_Status400() throws Exception {
-        // given
-        String id = "abc";
-
-        // when
-
-        // then
-        mockMvc.perform(get("/point/{id}", id))
-                .andExpect(status().isBadRequest());
     }
 
     /**
@@ -132,7 +132,7 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id}/charge - path에서 /{id}를 누락한 케이스
+     * PATCH /point/{id}/charge - id를 누락한 케이스
      */
     @Test
     void patchPointCharge_MissingIdPathVariable_Status405() throws Exception {
