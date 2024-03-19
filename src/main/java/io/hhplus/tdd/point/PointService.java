@@ -18,7 +18,7 @@ public class PointService {
         return userPointTable.selectById(id);
     }
 
-    public UserPoint updatePoint(long id, long amount) {
+    public UserPoint addPoint(long id, long amount) {
         UserPoint userPoint = userPointTable.selectById(id);
         UserPoint newUserPoint = userPointTable.insertOrUpdate(id, userPoint.point() + amount);
         pointHistoryTable.insert(id, newUserPoint.point(), TransactionType.CHARGE, System.currentTimeMillis());

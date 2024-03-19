@@ -117,7 +117,7 @@ public class PointControllerTest {
         long originalAmount = 500L;
         given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
-        given(pointService.updatePoint(id, originalAmount + amount))
+        given(pointService.addPoint(id, amount))
                 .willReturn(new UserPoint(id, originalAmount + amount, System.currentTimeMillis()));
 
         // when
@@ -203,5 +203,30 @@ public class PointControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
+    }
+
+    /**
+     * PATCH /point/{id}/use - 정상적으로 업데이트 성공하는 케이스
+     */
+    @Test
+    void patchPointUse_ValidParams_Success() throws Exception {
+        // given
+        long id = 1L;
+        long amount = 500L;
+        long originalAmount = 1000L;
+        given(pointService.getPoint(id))
+                .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
+        given(pointService.addPoint(id, -amount))
+                .willReturn(new UserPoint(id, originalAmount - amount, System.currentTimeMillis()));
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/{id}/use", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(amount)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.point").value(originalAmount - amount));
     }
 }
