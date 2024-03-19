@@ -46,10 +46,10 @@ public class PointControllerTest {
         // given
         long id = 1;
         long point = 1000;
-        given(pointService.getPoint(id))
-                .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // when
+        given(pointService.getPoint(id))
+                .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // then
         mockMvc.perform(get("/point/{id}", id))
@@ -215,12 +215,12 @@ public class PointControllerTest {
         long id = 1L;
         long amount = 500L;
         long originalAmount = 1000L;
+
+        // when
         given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
         given(pointService.usePoint(id, amount))
                 .willReturn(new UserPoint(id, originalAmount - amount, System.currentTimeMillis()));
-
-        // when
 
         // then
         mockMvc.perform(patch("/point/{id}/use", id)
@@ -314,12 +314,12 @@ public class PointControllerTest {
         long id = 1L;
         long amount = 1000L;
         long currentPoint = 500L;
+
+        // when
         given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, currentPoint, System.currentTimeMillis()));
         given(pointService.usePoint(id, amount))
                 .willThrow(new RuntimeException("보유 중인 포인트가 사용하고자 하는 포인트보다 적습니다."));
-
-        // when
 
         // then
         mockMvc.perform(patch("/point/{id}/use", id)
@@ -340,10 +340,10 @@ public class PointControllerTest {
         ArrayList<PointHistory> pointHistories = new ArrayList<>();
         pointHistories.add(new PointHistory(1, userId, 1000, TransactionType.CHARGE, System.currentTimeMillis()));
         pointHistories.add(new PointHistory(2, userId, 500, TransactionType.USE, System.currentTimeMillis() + 1000));
-        given(pointService.getPointHistories(userId))
-                .willReturn(pointHistories);
 
         // when
+        given(pointService.getPointHistories(userId))
+                .willReturn(pointHistories);
 
         // then
         mockMvc.perform(get("/point/{id}/histories", userId))
