@@ -21,7 +21,7 @@ public class PointService {
         return userPointTable.selectById(id);
     }
 
-    public UserPoint chargePoint(long id, long amount) {
+    public synchronized UserPoint chargePoint(long id, long amount) {
         UserPoint userPoint = userPointTable.selectById(id);
         UserPoint newUserPoint = userPointTable.insertOrUpdate(id, userPoint.point() + amount);
         pointHistoryTable.insert(id, newUserPoint.point(), TransactionType.CHARGE, System.currentTimeMillis());
@@ -30,7 +30,7 @@ public class PointService {
         return newUserPoint ;
     }
 
-    public UserPoint usePoint(long id, long amount) {
+    public synchronized UserPoint usePoint(long id, long amount) {
         UserPoint userPoint = userPointTable.selectById(id);
 
         if (userPoint.point() < amount) {
