@@ -1,6 +1,7 @@
 package io.hhplus.tdd.point;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.hhplus.tdd.database.PointHistoryTable;
 import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +37,17 @@ public class PointControllerTest {
     @MockBean
     private UserPointTable userPointTable;
 
+    @MockBean
+    private PointHistoryTable pointHistoryTable;
+
     /**
      * 1-1. GET /point/{id} - 정상적으로 조회 성공하는 케이스
      */
     @Test
     void getPoint_ValidId_Success() throws Exception {
         // given
-        Long id = 1L;
-        Long point = 1000L;
+        long id = 1;
+        long point = 1000;
         given(userPointTable.selectById(id))
                 .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
@@ -76,8 +80,8 @@ public class PointControllerTest {
     @Test
     void getPoint_NotExistingId_Point0() throws Exception {
         // given
-        Long id = 999_999L;
-        Long point = 0L;
+        long id = 999_999L;
+        long point = 0L;
         given(userPointTable.selectById(id))
                 .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
@@ -111,9 +115,9 @@ public class PointControllerTest {
     @Test
     void patchPointCharge_ValidParams_Success() throws Exception {
         // given
-        Long id = 1L;
-        Long amount = 1000L;
-        Long originalAmount = 500L;
+        long id = 1L;
+        long amount = 1000L;
+        long originalAmount = 500L;
         given(userPointTable.selectById(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
         given(userPointTable.insertOrUpdate(id, originalAmount + amount))
@@ -124,7 +128,7 @@ public class PointControllerTest {
         // then
         mockMvc.perform(patch("/point/{id}/charge", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(amount.toString()))
+                        .content(String.valueOf(amount)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.point").value(originalAmount + amount));
@@ -169,8 +173,8 @@ public class PointControllerTest {
     @Test
     void patchPointCharge_AmountIsString_Status400() throws Exception {
         // given
-        Long id = 1L;
-        Long originalAmount = 1000L;
+        long id = 1L;
+        long originalAmount = 1000L;
         String amountString = "abc";
 
         // when
@@ -190,15 +194,15 @@ public class PointControllerTest {
     @Test
     void patchPointCharge_AmountIsNegative_Status400() throws Exception {
         // given
-        Long id = 1L;
-        Long amountLong = -999L;
+        long id = 1L;
+        long amountLong = -999L;
 
         // when
 
         // then
         mockMvc.perform(patch("/point/{id}/charge", id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(amountLong.toString()))
+                        .content(String.valueOf(amountLong)))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value("500"))
                 .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
