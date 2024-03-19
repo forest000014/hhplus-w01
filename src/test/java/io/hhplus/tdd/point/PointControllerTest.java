@@ -146,10 +146,10 @@ public class PointControllerTest {
     }
 
     /**
-     * PATCH /point/{id}/charge - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
+     * PATCH /point/{id}/charge - 유효하지 않은 id(문자열)를 사용한 케이스
      */
     @Test
-    void patchPointCharge_InvalidId_Status400() throws Exception {
+    void patchPointCharge_IdIsString_Status400() throws Exception {
         // given
         String id = "abc";
         Map<String, String> body = new HashMap<>();
@@ -228,5 +228,79 @@ public class PointControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.point").value(originalAmount - amount));
+    }
+
+    /**
+     * PATCH /point/{id}/use - id를 누락한 케이스
+     */
+    @Test
+    void patchPointUse_MissingIdPathVariable_Status405() throws Exception {
+        // given
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/use"))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    /**
+     * PATCH /point/{id}/use - 유효하지 않은 id(e.g., 문자열)를 사용한 케이스
+     */
+    @Test
+    void patchPointUse_InvalidId_Status400() throws Exception {
+        // given
+        String id = "abc";
+        Map<String, String> body = new HashMap<>();
+        body.put("amount", "1000");
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/{id}/use", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * PATCH /point/{id}/use - 유효하지 않은 amount(문자열)를 사용한 케이스
+     */
+    @Test
+    void patchPointUse_AmountIsString_Status400() throws Exception {
+        // given
+        long id = 1L;
+        long originalAmount = 1000L;
+        String amountString = "abc";
+
+        // when
+        given(pointService.getPoint(id))
+                .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
+
+        // then
+        mockMvc.perform(patch("/point/{id}/use", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(amountString))
+                .andExpect(status().isBadRequest());
+    }
+
+    /**
+     * PATCH /point/{id}/use - 유효하지 않은 amount(음수)를 사용한 케이스
+     */
+    @Test
+    void patchPointUse_AmountIsNegative_Status400() throws Exception {
+        // given
+        long id = 1L;
+        long amountLong = -999L;
+
+        // when
+
+        // then
+        mockMvc.perform(patch("/point/{id}/use", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(amountLong)))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.code").value("500"))
+                .andExpect(jsonPath("$.message").value("에러가 발생했습니다."));
     }
 }
