@@ -1,8 +1,6 @@
 package io.hhplus.tdd.point;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.hhplus.tdd.database.PointHistoryTable;
-import io.hhplus.tdd.database.UserPointTable;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -31,14 +29,13 @@ public class PointControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+
     /**
-     * 컨트롤러 테스트이기 때문에, (DB의 기능은 정상적으로 작동한다고 가정하고) @MockBean을 사용했습니다.
+     * 컨트롤러 테스트이기 때문에, (다른 레이어는 정상적으로 작동한다고 가정하고) @MockBean을 사용했습니다.
      */
-    @MockBean
-    private UserPointTable userPointTable;
 
     @MockBean
-    private PointHistoryTable pointHistoryTable;
+    private PointService pointService;
 
     /**
      * 1-1. GET /point/{id} - 정상적으로 조회 성공하는 케이스
@@ -48,7 +45,7 @@ public class PointControllerTest {
         // given
         long id = 1;
         long point = 1000;
-        given(userPointTable.selectById(id))
+        given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // when
@@ -82,7 +79,7 @@ public class PointControllerTest {
         // given
         long id = 999_999L;
         long point = 0L;
-        given(userPointTable.selectById(id))
+        given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, point, System.currentTimeMillis()));
 
         // when
@@ -118,9 +115,9 @@ public class PointControllerTest {
         long id = 1L;
         long amount = 1000L;
         long originalAmount = 500L;
-        given(userPointTable.selectById(id))
+        given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
-        given(userPointTable.insertOrUpdate(id, originalAmount + amount))
+        given(pointService.updatePoint(id, originalAmount + amount))
                 .willReturn(new UserPoint(id, originalAmount + amount, System.currentTimeMillis()));
 
         // when
@@ -178,7 +175,7 @@ public class PointControllerTest {
         String amountString = "abc";
 
         // when
-        given(userPointTable.selectById(id))
+        given(pointService.getPoint(id))
                 .willReturn(new UserPoint(id, originalAmount, System.currentTimeMillis()));
 
         // then
